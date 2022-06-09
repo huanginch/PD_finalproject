@@ -63,21 +63,21 @@ bool addInv(char name[], double price, int quantity, enum bookType type){
 	return true;
 }
 
-struct category *traversaInv(){
+void traversaInv(){
 
-	return cat_list;
-	// int i;
-	// for(i = 0; i < MAX_CATEGORY; i++){
-	// 	printf("type %d:\n", i);//print type
-	// 	struct inventory *current = cat_list[i].inv_head;
-	// 	printf("id\tname\tprice\tquantity\n");//print title
-	// 	while(current != NULL){
-	// 		//printf each item
-	// 		printf("%d\t%s\t%.2f\t%d\n", current->inventoryId, current->inventoryName, current->price, current->quantity);
-	// 		current = current->next;
-	// 	}
-		
-	// }
+	//return cat_list;
+	int i;
+	for(i = 0; i < MAX_CATEGORY; i++){
+	 	printf("type %d:\n", i);//print type
+	 	struct inventory *current = cat_list[i].inv_head;
+	 	//printf("id\tname\tprice\tquantity\n");//print title
+	 	while(current != NULL){
+	 		//printf each item
+	 		//printf("%d\t%s\t%.2f\t%d\n", current->inventoryId, current->inventoryName, current->price, current->quantity);
+			printInv(current, i);
+	 		current = current->next;
+	 	}	
+	}
 }
 
 bool sortInv(int order, int order_by){

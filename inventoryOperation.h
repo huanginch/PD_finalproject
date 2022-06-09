@@ -2,10 +2,11 @@
 #define inventoryOperation
 #include "basic.h"
 #include "myDS.h"
+#include "fileIO.h"
 
  void initInv(void);//initialization
  bool addInv(char name[], double prrice, int quantity, enum bookType type);//add produce
- struct category *traversaInv();//printf each item
+ void traversaInv();//printf each item
  bool sortInv(int order, int order_by);//order(1:升序 0:降序) order_by(1:price 0:id)
  bool deleteInv(int id);//delete produce
  bool searchInvByID(int id);//search id and print the specific item

@@ -2,6 +2,7 @@
 #define orderOperation
 #include "basic.h"
 #include "myDS.h"
+#include "fileIO.h"
 
 /***********************************************
 * initOrder: create order queue and initialize *

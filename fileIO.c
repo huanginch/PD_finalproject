@@ -1,22 +1,43 @@
 #include "fileIO.h"
-#include "orderOperation.h"
 
+/* print error message */
+void errorMessage(int error)
+{
+    switch(error)
+    {
+    case 0:
+        printf("ERROR : Please enter the correct value.\n");
+        break;
+    case 1:
+        printf("ERROR : Add failed.\n");
+        break;
+    case 2:
+        printf("ERROR : Delete failed.\n");
+        break;
+    case 3:
+        printf("\n");
+        break;
+    default:
+        break;
+    }
+}
 
-/**/
-int check_type(char *c_type)
+/* Check if the text input of the type matches the corresponding type */
+int checkType(char *c_type)
 {
     if      (!strcmp (c_type, "EDU"))   return EDU;
     else if (!strcmp (c_type, "FIN"))   return FIN;
     else if (!strcmp (c_type,"NOVEL"))  return NOVEL;
-    //ERROR : type is not in the category list.
+    // ERROR : type is not in the category list.
     else  return -1;
 }
-/**/
+
+/* to get the inventory info from file or user input */
 void readInv(void)
 {
     int input;
     printf("Which type of data you want to input?\n");
-    printf("[0] File or [1] Manual entry: ");
+    printf("[0] file(.csv) [1] user input: ");
     scanf("%d", &input);
 
     //input a file
@@ -31,7 +52,7 @@ void readInv(void)
 		
 		if (!fp)
 		{
-			printf("Can't open file\n");
+			printf("Can't open file TT...\n");
 		}
     	else 
 		{
@@ -43,7 +64,6 @@ void readInv(void)
         	char buffer[1024];
         	int row = 0;
 
-        	/*problem : how to deal with syntax errors in the file?*/
         	while(fgets(buffer, 1024, fp)) 
 			{
            		row++;
@@ -70,7 +90,7 @@ void readInv(void)
 
             	// Column 4 : Type
             	c_type = value;
-                type = check_type(c_type);
+                type = checkType(c_type);
 
                 if(value == NULL)
                 {
@@ -84,17 +104,22 @@ void readInv(void)
                     printf("ERROR : The type attribute on line %d is incorrect\n", row);
                     break;
                 }
-                addInv(name,price,quantity,type);
+
+                if( !addInv(name,price,quantity,type) )
+                {
+                    errorMessage(1);
+                    break;
+                }
 			}
         // Close the file
         fclose(fp);
 		}
     }
-    //input one data
+    //user input
     else if(input == 1)
     {
-		char name[20],c_type[20];
-    	int price, quantity, type;
+		char name[20], c_type[20];
+    	int  price, quantity, type;
         
         printf("Name: ");
         scanf("%s", name);
@@ -107,7 +132,7 @@ void readInv(void)
 
         printf("Type: ");
         scanf("%s", c_type);
-        type = check_type(c_type);
+        type = checkType(c_type);
 
         if(type == -1)
         {
@@ -115,31 +140,34 @@ void readInv(void)
             printf("ERROR : The type attribute is incorrect\n");
             return;
         }
-        addInv(name,price,quantity,type);
+
+        if( !addInv(name,price,quantity,type) )
+        {
+            errorMessage(1); 
+        }
     }
 }
 
-void printInv(void)
+void printInv(struct inventory * inv,int category)
 {
-    int order, order_by;
-    printf("To show the data, which attribute do you want to sort?\n");
-    printf("[0] id or [1] price: ");
-    scanf("%d", &order_by);
-    printf("[0] increasing or [1] decreasing: ");
-    scanf("%d", &order);
-    sortInv(order,order_by);
-    traversaInv();
+    static char *type_table[] = {"EDU", "FIN", "NOVEL"};
+    printf("%d\t%s\t%.2f\t%d\t%s\n", inv->inventoryId, inv->inventoryName, inv->price, inv->quantity, type_table[i]);
 }
 
+/* to get the order info from file or user input */
 void readOrder(void)
 {
+    char *CustomerName;
+	int inventoryIds [5], inventoryQuantity [5], totalPrice;
+
     int input;
     const char path[100];
 
-    printf("Which type of data you want to input?\n");
-    printf("[0] File or [1] Manual entry: ");
+    printf("Which type of data you want to input?");
+    printf("[0] file(.csv) [1] user input: ");
     scanf("%d", &input);
 
+    //input a file
     if(input == 0)
     {
 		const char path[100];
@@ -153,13 +181,10 @@ void readOrder(void)
 		
 		if (!fp)
 		{
-			printf("Can't open file\n");
+			printf("Can't open file TT...\n");
 		}
     	else 
 		{
-			char *CustomerName;
-			int inventoryIds [5], inventoryQuantity [5], totalPrice;
-        
         	// Here we have taken size of
         	// array 1024 you can modify it
         	char buffer[1024];
@@ -202,34 +227,43 @@ void readOrder(void)
                     break;
                 }
 
-                addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice);
+                if( !addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice))
+                {
+                    errorMessage(1);
+                    break;
+                }
 			}
         // Close the file
         fclose(fp);
 		}
     }
+    //user input
     else if(input == 1)
     {
-		char *CustomerName;
-		int inventoryIds [5], inventoryQuantity [5], totalPrice;
-
+        // Column 1 : Name
         printf("CustomerName: ");
         scanf("%s", CustomerName);
 
+        // Column 2~11 : item info
         for(int i = 0 ;i < 5 ; i++)
         {
+            // item i id
             printf("Product %d ID: ", i);
             scanf("%d", &inventoryIds[i]);
 
+            // item i  quantity
             printf("Product %d Amount: ", i);
             scanf("%d", &inventoryQuantity[i]);
         }
 
+        // Column 12 : totalPrice
         printf("total price: ");
         scanf("%d", &totalPrice);
 
-		//printf("%s\t%d\t%d\t%s\n",name, price, quantity, type);
-        addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice);
+        if( !addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice))
+        {
+            errorMessage(1);
+        }
     }
 }
 
@@ -253,14 +287,12 @@ void inventory()
         printf("[0] add [1] delete [2] show [3] search  [4] replenish [5] exit: ");
         scanf("%d", &action);
 
+        // add
         if(action == 0)
         {
-            static int InputType;
-            printf("Which type of data to input? [0] file(.csv) [1] user input: \n");
-            scanf("%d", &InputType);
             readInv();
-            //not finish
         }
+        // delete
         else if(action == 1)
         {
             int num_del;
@@ -271,13 +303,26 @@ void inventory()
             {
                 printf("Enter the %d's book id to detete: ",i);
                 scanf("%d",&id_del);
-                deleteInv(id_del);
+                if( !deleteInv(id_del) )
+                {
+                    errorMessage();
+                }
             }
         }
+        // show
         else if(action == 2)
         {
-            printInv();
+            int order, order_by;
+            printf("To show the data, which attribute do you want to sort?\n");
+            printf("[0] id or [1] price: ");
+            scanf("%d", &order_by);
+            printf("[0] increasing or [1] decreasing: ");
+            scanf("%d", &order);
+            sortInv(order,order_by);
+            printf("ID\tName\tPrice\tQuantity\tCategory\n");    // print title
+            traversaInv();
         }
+        // search
         else if(action == 3)
         {
             int search_by;
@@ -304,6 +349,7 @@ void inventory()
                 printf("Please enter the correct number.\n");
             }
         }
+        // replenish
         else if(action == 4)
         {
             int replenish_id;
@@ -315,13 +361,15 @@ void inventory()
             scanf("%d",&replenish_num);
             replenish(replenish_id,replenish_num);
         }
+        // exit
         else if(action == 5)
         {
             break;
         }
+        // error input
         else
         {
-            printf("Please enter the correct value.\n");
+            errorMessage(0);
         }
     }
 }
@@ -335,26 +383,25 @@ void order()
         printf("[0] add [1] delete [2] show [3] search [4] exit:");
         scanf("%d", &action);
         
+        // add
         if(action == 0)
         {
-            static int InputType;
-            printf("Which type of data to input? [0] file(.csv) [1] user input: \n");
-            scanf("%d", &InputType);
             void readOrder();
-            //not finish
         }
+        // delete
         else if(action == 1)
         {
             int num_del;
             int id_del;
-            printf("How many number of data do you want to delete?: ");
+            printf("How many number of order do you want to cancel?: ");
             scanf("%d", &num_del);
             for(int i = 0 ; i < num_del ; i++){
-                printf("Enter the %d's order id to detete: ",i);
+                printf("Enter the %d's order ID to cancel: ",i);
                 scanf("%d",&id_del);
                 cancelOrder(id_del);
             }
         }
+        // show
         else if(action == 2)
         {
             //problem: how to do with the input is in the list correct.
@@ -366,6 +413,7 @@ void order()
             scanf("%d", &order);
             sortOrder(order,order_by);
         }
+        // search
         else if(action == 3)
         {    
             int search_id;
@@ -374,13 +422,14 @@ void order()
             searchOrder(search_id);
             
         }
+        // exit
         else if(action == 4)
         {
             break;
         }
         else
         {
-            printf("Please enter the correct value.\n");
+            errorMessage(1);
         }
     }
 }
@@ -394,17 +443,21 @@ void main_menu()
         printf("[0] inventory [1] order [2] Quit: ");
         scanf("%d", &act_data);
 
-        if(act_data == 0){
+        if(act_data == 0)
+        {
             inventory();
         }
-        else if(act_data == 1){
+        else if(act_data == 1)
+        {
             order();
         }
-        else if(act_data == 2){
+        else if(act_data == 2)
+        {
             break;
         }
-        else{
-            printf("Please enter the correct value.\n");
+        else
+        {
+            errorMessage(0);
         }
     }
 }
