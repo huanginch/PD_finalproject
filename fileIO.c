@@ -180,7 +180,7 @@ void readOrder(void)
     const char path[100];
 
     printf("Which type of data you want to input?\n");
-    printf("[0] file(.csv) [1] user input: ");
+    printf("[0] file(.csv): "); //[1] user input
     scanf("%d", &input);
 
     //input a file
@@ -252,7 +252,7 @@ void readOrder(void)
 		}
     }
     //user input
-    else if(input == 1)
+    /*else if(input == 1)
     {
         // Column 1 : Name
         printf("CustomerName: ");
@@ -289,7 +289,7 @@ void readOrder(void)
         {
             errorMessage(1);
         }
-    }
+    }*/
 }
 
 void printOrder(struct order *ptr)
