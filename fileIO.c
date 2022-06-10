@@ -282,6 +282,8 @@ void readOrder(void)
                 printf("Product %d Amount: ", i+1);
                 scanf("%d", &inventoryQuantity[i]);
             }
+
+            checkReplenish(inventoryIds[i]);
         }
 
 
