@@ -132,7 +132,7 @@ bool sortInv(int order, int order_by){
 }
 
 /***********柏恩part************/
-void deleteInv(int id){//delete produce
+bool deleteInv(int id){//delete produce
 	struct inventory *cur, *prev;
 	for(int i = 0; i < MAX_CATEGORY; i++){
 		for (cur = cat_list[i].inv_head , prev = NULL;
@@ -142,7 +142,7 @@ void deleteInv(int id){//delete produce
 		if (cur == NULL)
 		{
 			
-			return;
+			return false;
 		}
 		if (prev == NULL)
 		{
@@ -154,10 +154,13 @@ void deleteInv(int id){//delete produce
 			
 			prev->next = cur->next; 
 		}
+		 free(cur);
+	     return true;
 	}
+	return false;
 }
 
-void searchInvByID(int id){//search id and print the specific item
+bool searchInvByID(int id){//search id and print the specific item
 	struct inventory *p;
 	int count = 0;
 	p = malloc(sizeof(struct inventory));
@@ -166,21 +169,21 @@ void searchInvByID(int id){//search id and print the specific item
 	{ //找id位置
 
 		if (p->inventoryId==id)
-		{
+		{   printf("id\tname\tprice\tquantity\n");
 			//print item
 			printf("%d\t%s\t%f\t%d\n", p->inventoryId, p->inventoryName, p->price, p->quantity);
 			count++;
-
+            return true;
 		}
 	} }//
 	if (count == 0)
-	{
-		printf("Don't has this inventory\n");
+	{    return false;
+		// printf("Don't has this inventory\n");
 	}
-
+  return false;
 }
 
-void searchInvByName(char name[]){//search name and print the specific item
+bool searchInvByName(char name[]){//search name and print the specific item
 	struct inventory *p;
 	int count = 0;
 	p = malloc(sizeof(struct inventory));
@@ -189,18 +192,19 @@ void searchInvByName(char name[]){//search name and print the specific item
 	{ //找name位置
 
 		if (strcmp(p->inventoryName,name)==0)
-		{
+		{   
+			 printf("id\tname\tprice\tquantity\n");
 			//print item
 			printf("%d\t%s\t%f\t%d\n", p->inventoryId, p->inventoryName, p->price, p->quantity);
 			count++;
-
+           return true;
 		}
-	} }//
+	} }
 	if (count == 0)
 	{
-		printf("Don't has this inventory\n");
+		return false;
 	}
-
+   return false;
 }
 
 /************end************/
