@@ -434,7 +434,7 @@ void order()
     while(true)
     {
         printf("Please enter an number to do with the order?\n");
-        printf("[0] add [1] delete [2] show [3] search [4] exit:");
+        printf("[0] add [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:");
         scanf("%d", &action);
         
         // add
@@ -476,8 +476,13 @@ void order()
             searchOrder(search_id);
             
         }
-        // exit
+        // completeOrder
         else if(action == 4)
+        {    
+            completeOrder();
+        }
+        // exit
+        else if(action == 5)
         {
             break;
         }
