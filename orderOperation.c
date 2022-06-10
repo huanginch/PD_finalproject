@@ -1,7 +1,9 @@
 #include "orderOperation.h"
 
+extern struct category cat_list[MAX_CATEGORY];//the list of category
+
 //initial order queue
-struct orderQueue order_queue = {NULL,NULL};  
+struct orderQueue order_queue = {NULL,NULL};
 static int num_order = 0;
 
 BOOL isEmpty(void)
@@ -32,6 +34,9 @@ BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], 
 
     for(int i = 0 ; i < invNum ; i++)
     {
+        //Check if we need replenishment
+        //checkReplenish(inventoryIds[i]);
+
         order_new->inventory[i][0] = inventoryIds[i];
         order_new->inventory[i][1] = inventoryQuantity[i];
 
@@ -91,21 +96,22 @@ void sortOrder(int order, int order_by)
         printf("There is no order.\n");
         return;
     }
-
+    printf("headID:%d\n",(order_queue.head)->orderId);
     struct order *ptr;
     if(order_by == 0)
     {
-        if(order == 0)
+        if(order == 1)
         {
             for(ptr = order_queue.tail ; ptr != NULL ; ptr = ptr->prev)
             {
                 printOrder(ptr);
             }
         }
-        else if(order == 1)
+        else if(order == 0)
         {
             for(ptr = order_queue.head ; ptr != NULL ; ptr = ptr->next)
             {
+                printf("ptr:%d\n",ptr->orderId);
                 printOrder(ptr);
             }
         }
@@ -170,11 +176,50 @@ BOOL completeOrder(){
     else{
         num_order--;
         struct order *toComplete = order_queue.head;
-        order_queue.head = order_queue.head->next;
         printf("Order:%d complete!\n", toComplete->orderId); //for debug
+        
+        //Reduce book's inventory
+        int i = 0;
+        int type = 0;
+        //check inventory type
+        while(toComplete->inventory[i][0]){
+            int inventory_complete_id = toComplete->inventory[i][0];
+            int inventory_complete_num = toComplete->inventory[i][1];
+            if(inventory_complete_id - 300 > 0){
+                type = 2;   
+            }
+            else if(inventory_complete_id - 200 > 0){
+                type = 1;
+            }
+            else if(inventory_complete_id - 100 > 0){
+                type = 0;
+            }
+            struct inventory *cur = cat_list[type].inv_head;
+            while(cur != NULL){
+                if(cur->inventoryId == inventory_complete_id){
+                    cur->quantity -= inventory_complete_num;
+                    break;
+                }
+                cur = cur->next;
+            }
+            i++;
+        }
+        
+        toComplete = order_queue.head;
+        order_queue.head = toComplete->next;
+        (order_queue.head)->prev = NULL;
         free(toComplete);
+
         return true;
     }
+    // else{
+    //     num_order--;
+    //     struct order *toComplete = order_queue.head;
+    //     order_queue.head = order_queue.head->next;
+    //     printf("Order:%d complete!\n", toComplete->orderId); //for debug
+    //     free(toComplete);
+    //     return true;
+    // }
 }
 
 BOOL cancelOrder(int orderId){
