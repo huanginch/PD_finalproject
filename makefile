@@ -14,4 +14,4 @@ sort.o: sort.c orderOperation.h basic.h myDS.h
 	gcc -c sort.c
 
 clean:
-	rm -f *.o
+	rm -f *.o *.exe
