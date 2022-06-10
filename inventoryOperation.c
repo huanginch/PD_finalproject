@@ -64,16 +64,14 @@ bool addInv(char name[], double price, int quantity, enum bookType type){
 }
 
 void traversaInv(){
-
 	//return cat_list;
 	int i;
 	for(i = 0; i < MAX_CATEGORY; i++){
 	 	printf("type %d:\n", i);//print type
 	 	struct inventory *current = cat_list[i].inv_head;
-	 	//printf("id\tname\tprice\tquantity\n");//print title
+		printf("ID\tCategory\tName\tPrice\tQuantity\n");
 	 	while(current != NULL){
 	 		//printf each item
-	 		//printf("%d\t%s\t%.2f\t%d\n", current->inventoryId, current->inventoryName, current->price, current->quantity);
 			printInv(current, i);
 	 		current = current->next;
 	 	}	
@@ -136,9 +134,8 @@ bool deleteInv(int id){//delete produce
 	struct inventory *cur, *prev;
 	for(int i = 0; i < MAX_CATEGORY; i++){
 		for (cur = cat_list[i].inv_head , prev = NULL;
-			cur != NULL && cur->inventoryId==id;
-			prev = cur, cur = cur->next)
-			;
+			cur != NULL && cur->inventoryId != id;
+			prev = cur, cur = cur->next);
 		if (cur == NULL)
 		{
 			
@@ -160,51 +157,30 @@ bool deleteInv(int id){//delete produce
 	return false;
 }
 
-bool searchInvByID(int id){//search id and print the specific item
+struct inventory *searchInvByID(int id){//search id and print the specific item
 	struct inventory *p;
-	int count = 0;
-	p = malloc(sizeof(struct inventory));
 	for(int i = 0; i < MAX_CATEGORY; i++){
-		for (p = cat_list[i].inv_head; p != NULL; p = p->next)
-	{ //找id位置
-
-		if (p->inventoryId==id)
-		{   printf("id\tname\tprice\tquantity\n");
-			//print item
-			printf("%d\t%s\t%f\t%d\n", p->inventoryId, p->inventoryName, p->price, p->quantity);
-			count++;
-            return true;
-		}
-	} }//
-	if (count == 0)
-	{    return false;
-		// printf("Don't has this inventory\n");
+		for (p = cat_list[i].inv_head; p != NULL; p = p->next){ 
+			//找id位置
+			if (p->inventoryId==id){   
+				return p;
+			}
+		} 
 	}
-  return false;
+  	return NULL;
 }
 
-bool searchInvByName(char name[]){//search name and print the specific item
+struct inventory *searchInvByName(char name[]){//search name and print the specific item
 	struct inventory *p;
-	int count = 0;
-	p = malloc(sizeof(struct inventory));
 	for(int i = 0; i < MAX_CATEGORY; i++){
-		for (p = cat_list[i].inv_head; p != NULL; p = p->next)
-	{ //找name位置
-
-		if (strcmp(p->inventoryName,name)==0)
-		{   
-			 printf("id\tname\tprice\tquantity\n");
-			//print item
-			printf("%d\t%s\t%f\t%d\n", p->inventoryId, p->inventoryName, p->price, p->quantity);
-			count++;
-           return true;
-		}
-	} }
-	if (count == 0)
-	{
-		return false;
+		for (p = cat_list[i].inv_head; p != NULL; p = p->next){ 
+			//找id位置
+			if (strcmp(p->inventoryName,name)==0){   
+				return p;
+			}
+		} 
 	}
-   return false;
+  	return NULL;
 }
 
 /************end************/
@@ -229,9 +205,9 @@ void replenish(int replenish_id,int replenish_num){
 			cur->quantity += replenish_num;
 			break;
 		}
-
 		cur = cur->next;
 	}
+	printOneInv(cur);
 }
 
 int cmpAscById(const void *a, const void *b){

@@ -19,7 +19,7 @@ BOOL isEmpty(void);
 /********************
 * addOrder: Enqueue *
 *********************/
-BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], int totalPrice);
+BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], int invNum);
 
 /****************************************************************
 * sortOrder: sort order by id or total price in ASC or DESC way *

@@ -10,26 +10,38 @@ BOOL isEmpty(void)
 }
 
 //add a new order into queue.
-BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], int totalPrice)
+BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], int invNum)
 {
     static int orderID = 0;
     num_order++;
 
     //declare order_new
     struct order *order_new = malloc(sizeof(struct order));
-    if (!order_new)
-    {
+    if(!order_new){
         return false;
     }
 
-    //initalize order_new
+    //initalize order_new's inventory
+    for(int i = 0 ; i < 20 ; i++){
+        for(int j = 0 ; j < 2 ; j++)
+            order_new->inventory[i][j] = 0;
+    }
     strcpy(order_new->CustomerName , CustomerName);
     order_new->orderId = orderID++;
-    for(int i = 0 ; i < 20 ; i++)
+    float totalPrice = 0;
+
+    for(int i = 0 ; i < invNum ; i++)
     {
-        order_new->inventoryIds[i] = inventoryIds[i];
-        order_new->inventoryQuantity[i] = inventoryQuantity[i];
+        order_new->inventory[i][0] = inventoryIds[i];
+        order_new->inventory[i][1] = inventoryQuantity[i];
+
+        //Searcch for price
+        struct inventory *p;
+        p = searchInvByID(inventoryIds[i]);
+
+        totalPrice += p->price * inventoryQuantity[i];
     }
+
     order_new->totalPrice = totalPrice;
     time(&order_new->orderDate);
     //order_new->orderDate = orderDate;
@@ -137,9 +149,9 @@ void searchOrder(int orderId){
     }
     else{
         struct order *cur = order_queue.head;
-        while (cur->next != NULL){
+        while (cur != NULL){
             if(cur->orderId == orderId){
-                printf("Find order:%d!\n", cur->orderId);
+                printOrder(cur);
                 return;
             }
             else{
@@ -172,11 +184,22 @@ BOOL cancelOrder(int orderId){
     }
     else{
         struct order *cur = order_queue.head;
-        while (cur->next != NULL){
+        while (cur != NULL){
             if(cur->orderId == orderId){
                 struct order *toCancel = cur;
-                cur->prev->next = cur->next;
-                cur->next->prev = cur->prev;
+
+                /* If node to be deleted is head node */
+                if (order_queue.head == toCancel)
+                    order_queue.head = toCancel->next;
+            
+                /* Change next only if node to be deleted is NOT the last node */
+                if (toCancel->next != NULL)
+                    toCancel->next->prev = toCancel->prev;
+            
+                /* Change prev only if node to be deleted is NOT the first node */
+                if (toCancel->prev != NULL)
+                    toCancel->prev->next = toCancel->next;
+
                 printf("Order:%d canceled!\n", toCancel->orderId); //for debug
                 free(toCancel);
                 return true;

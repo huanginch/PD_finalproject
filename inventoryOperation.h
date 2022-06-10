@@ -9,8 +9,8 @@
  void traversaInv();//printf each item
  bool sortInv(int order, int order_by);//order(1:升序 0:降序) order_by(1:price 0:id)
  bool deleteInv(int id);//delete produce
- bool searchInvByID(int id);//search id and print the specific item
- bool searchInvByName(char name[]);//search name and print the specific item
+ struct inventory * searchInvByID(int id);//search id and print the specific item
+ struct inventory * searchInvByName(char name[]);//search name and print the specific item
  void replenish(int replenish_id,int replenish_num);//replenish the inventory
 
  int cmpDesById(const void *a, const void *b);
