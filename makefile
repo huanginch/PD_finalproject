@@ -1,9 +1,6 @@
 main.exe: main.o fileIO.o inventoryOperation.o orderOperation.o sort.o
 	gcc -o main.exe main.o fileIO.o inventoryOperation.o orderOperation.o sort.o
 	 
-main.o: main.c basic.h orderOperation.h inventoryOperation.h sort.h fileIO.h
-	gcc -c main.c
-	 
 fileIO.o: fileIO.c fileIO.h
 	gcc -c fileIO.c
 	 
