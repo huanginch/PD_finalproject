@@ -8,6 +8,7 @@
         "sort.h": "c",
         "basic.h": "c",
         "myds.h": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "fileio.h": "c"
     }
 }

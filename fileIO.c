@@ -6,16 +6,16 @@ void errorMessage(int error)
     switch(error)
     {
     case 0:
-        printf("ERROR : Please enter the correct value.\n");
+        printf(RED_BOLD"ERROR : Please enter the correct value.\n"RESET);
         break;
     case 1:
-        printf("ERROR : Add failed.\n");
+        printf(RED_BOLD"ERROR : Add failed.\n"RESET);
         break;
     case 2:
-        printf("ERROR : Delete failed.\n");
+        printf(RED_BOLD"ERROR : Delete failed.\n"RESET);
         break;
     case 3:
-        printf("\n");
+        printf(RED_BOLD"\n"RESET);
         break;
     default:
         break;
@@ -52,7 +52,7 @@ void readInv(void)
 		
 		if (!fp)
 		{
-			printf("Can't open file TT...\n");
+			printf(RED_BOLD"ERROR : Can't open file TT...\n"RESET);
 		}
     	else 
 		{
@@ -186,7 +186,7 @@ void readOrder(void)
     
     if (!fp)
     {
-        printf("Can't open file TT...\n");
+        printf(RED_BOLD"ERROR : Can't open file TT...\n"RESET);
     }
     else 
     {
@@ -286,18 +286,18 @@ void printOrder(struct order *ptr)
 
     struct tm *order_time;
     order_time = gmtime(&ptr->orderDate);
-    printf("OrderID\tCustomerName\n");
+    printf(BLU_BOLD"OrderID\tCustomerName\n"RESET);
     printf("%04d\t\t%s\t\n",ptr->orderId, ptr->CustomerName);
     printf("------------------------\n");
 
-    printf("GOODS\n");
-    printf("BOOKID\tBOOKQuantity\n");
+    printf(BLU_BOLD"GOODS\n");
+    printf("BOOKID\tBOOKQuantity\n"RESET);
     for(int i = 0 ; i<invNum ; i++)
         printf("%d\t%d\n",ptr->inventory[i][0], ptr->inventory[i][1]); 
     printf("------------------------\n");
     
-    printf("Total price $%.2f\n", ptr->totalPrice);
-    printf("Date %d/%d/%d\n",(1900+order_time->tm_year),(1+order_time->tm_mon),order_time->tm_mday);
+    printf(BLU_BOLD"Total price \x1b[0m$%.2f\n", ptr->totalPrice);
+    printf(BLU_BOLD"Date\x1b[0m %d/%d/%d\n",(1900+order_time->tm_year),(1+order_time->tm_mon),order_time->tm_mday);
     printf("========================\n");
 }
 
@@ -307,7 +307,7 @@ void inventory()
     while(true)
     {
         printf("Please enter an number to do with the inventory?\n");
-        printf("[0] add [1] delete [2] show [3] search  [4] replenish [5] exit: ");
+        printf(YEL_BOLD"[0] add [1] delete [2] show [3] search  [4] replenish [5] exit: "RESET);
         scanf("%d", &action);
 
         // add
@@ -328,7 +328,7 @@ void inventory()
                 scanf("%d",&id_del);
                 if( deleteInv(id_del) )
                 {
-                    printf("successfully deleted\n");
+                    printf(GRN_BOLD"MSG : successfully deleted\n"RESET);
                 }
                 else
                 {
@@ -401,7 +401,7 @@ void inventory()
             printf("Enter the amount of the book you want to add?: ");
             scanf("%d",&replenish_num);
             while(replenish_num <= 0){
-                printf("The number must > 0.\n");
+                printf(RED_BOLD"ERROR : The number must > 0.\n"RESET);
                 printf("Enter the amount of the book you want to add?: ");
                 scanf("%d",&replenish_num);
             }
@@ -426,7 +426,7 @@ void order()
     while(true)
     {
         printf("Please enter an number to do with the order?\n");
-        printf("[0] importOrder [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:");
+        printf(YEL_BOLD"[0] importOrder [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:"RESET);
         scanf("%d", &action);
         
         // add
@@ -491,7 +491,7 @@ void main_menu()
     while(true)
     {
         printf("Which data do you want to act on ?\n");
-        printf("[0] inventory [1] order [2] Quit: ");
+        printf(YEL_BOLD"[0] Inventory [1] Order [2] Quit: "RESET);
         scanf("%d", &act_data);
 
         if(act_data == 0)
