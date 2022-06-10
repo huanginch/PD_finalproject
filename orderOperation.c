@@ -263,5 +263,4 @@ void checkReplenish(int inventoryId){
     if(inv->quantity < 10){
         printf("ID:%d商品庫存過少，請補貨\n", inventoryId);
     }
-    return;
 }

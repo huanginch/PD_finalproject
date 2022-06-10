@@ -237,9 +237,7 @@ void readOrder(void)
             	    // item i  quantity
             	    inventoryQuantity [i] = atoi(value);
             	    value = strtok(NULL, ", \n");
-                }
 
-                for(int i = 0; i < numType; i++){
                     checkReplenish(inventoryIds[i]);
                 }
 
