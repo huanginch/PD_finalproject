@@ -24,12 +24,11 @@ struct category {
 struct order {
     char CustomerName [MAX_CUSTOMER_NAME];
     int orderId;
-    int inventoryIds[20];
-    int inventoryQuantity[20];
-    int totalPrice;
+    float totalPrice;
     time_t orderDate;
     struct order *prev;
     struct order *next;
+    int inventory[20][2]; //Record id and quantity
 };
 
 struct orderQueue {

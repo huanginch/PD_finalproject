@@ -147,18 +147,34 @@ void readInv(void)
         }
     }
 }
+void printOneInv(struct inventory *inv)
+{
+    static char *type_table[] = {"EDU", "FIN", "NOVEL"};
+    int type = 0;
+    //check inventory type
+    if(inv->inventoryId - 300 > 0){
+        type = 2;   
+    }
+    else if(inv->inventoryId - 200 > 0){
+        type = 1;
+    }
+    else if(inv->inventoryId - 100 > 0){
+        type = 0;
+    }
+    printf("ID\tCategory\tName\tPrice\tQuantity\n");
+    printf("%d\t%s\t\t%s\t%.2f\t%d\n", inv->inventoryId, type_table[type],inv->inventoryName, inv->price, inv->quantity);
+}
 
 void printInv(struct inventory * inv,int category)
 {
     static char *type_table[] = {"EDU", "FIN", "NOVEL"};
-    printf("%d\t%s\t%.2f\t%d\t%s\n", inv->inventoryId, inv->inventoryName, inv->price, inv->quantity, type_table[category]);
+    printf("%d\t%s\t\t%s\t%.2f\t%d\n", inv->inventoryId, type_table[category],inv->inventoryName, inv->price, inv->quantity);
 }
 
 /* to get the order info from file or user input */
 void readOrder(void)
 {
     char *CustomerName;
-	int inventoryIds [5], inventoryQuantity [5], totalPrice;
 
     int input;
     const char path[100];
@@ -205,8 +221,14 @@ void readOrder(void)
             	CustomerName = value;
             	value = strtok(NULL, ", \n");
 
+                int numType = 0;
+                numType = atoi(value);
+                int inventoryIds[numType];
+                int inventoryQuantity[numType];
+
+                value = strtok(NULL, ", \n");
                 // Column 2~11 : item info
-                for(int i = 0 ; i < 5 ; i++)
+                for(int i = 0 ; i < numType ; i++)
                 {
                     // item i id
             	    inventoryIds [i] = atoi(value);
@@ -217,17 +239,7 @@ void readOrder(void)
             	    value = strtok(NULL, ", \n");
                 }
 
-            	// Column 12 : totalPrice
-            	totalPrice = atoi(value);
-
-                if(value == NULL)
-                {
-                    // there are at least one value lost.
-                    printf("ERROR : Line %d has missing value.\n", row);
-                    break;
-                }
-
-                if( !addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice))
+                if( !addOrder(CustomerName, inventoryIds, inventoryQuantity, numType))
                 {
                     errorMessage(1);
                     break;
@@ -242,25 +254,34 @@ void readOrder(void)
     {
         // Column 1 : Name
         printf("CustomerName: ");
-        scanf("%s", CustomerName);
+        scanf("%s", &CustomerName);
+
+        int numType = 0;
+        printf("How many types of book need to add: ");
+        scanf("%d", &numType);
+        int inventoryIds[numType];
+        int inventoryQuantity[numType];
 
         // Column 2~11 : item info
-        for(int i = 0 ;i < 5 ; i++)
+        for(int i = 0 ;i < numType ; i++)
         {
             // item i id
-            printf("Product %d ID: ", i);
+            printf("Product %d ID: ", i+1);
             scanf("%d", &inventoryIds[i]);
-
-            // item i  quantity
-            printf("Product %d Amount: ", i);
-            scanf("%d", &inventoryQuantity[i]);
+            struct inventory *p;
+            p = searchInvByID(inventoryIds[i]);
+            if(p == NULL){
+                printf("No such inventory.\n");
+                i--;
+            }
+            else{
+                printf("Product %d Amount: ", i);
+                scanf("%d", &inventoryQuantity[i]);
+            }
         }
 
-        // Column 12 : totalPrice
-        printf("total price: ");
-        scanf("%d", &totalPrice);
 
-        if( !addOrder(CustomerName, inventoryIds, inventoryQuantity,totalPrice))
+        if( !addOrder(CustomerName, inventoryIds, inventoryQuantity, numType))
         {
             errorMessage(1);
         }
@@ -269,14 +290,23 @@ void readOrder(void)
 
 void printOrder(struct order *ptr)
 {
-    //print: orderId CustomerName inventoryIds[5] inventoryQuantity[5] totalPrice orderDate
+    int invNum = sizeof(&(ptr->inventory))/sizeof(ptr->inventory[0]);
+
     struct tm *order_time;
     order_time = gmtime(&ptr->orderDate);
-    printf("%d\t%s\t%d %d\t%d %d\t%d %d\t%d %d\t%d %d\t%d\t%d/%d/%d\n",
-        ptr->orderId, ptr->CustomerName, ptr->inventoryIds[0], ptr->inventoryQuantity[0],
-        ptr->inventoryIds[1], ptr->inventoryQuantity[1], ptr->inventoryIds[2], ptr->inventoryQuantity[2],
-        ptr->inventoryIds[3], ptr->inventoryQuantity[3], ptr->inventoryIds[4], ptr->inventoryQuantity[4],
-        ptr->totalPrice,(1900+order_time->tm_year), (1+order_time->tm_mon),order_time->tm_mday);   
+    printf("OrderID\tCustomerName\n");
+    printf("%04d\t\t%s\t\n",ptr->orderId, ptr->CustomerName);
+    printf("------------------------\n");
+
+    printf("GOODS\n");
+    printf("BOOKID\tBOOKQuantity\n");
+    for(int i = 0 ; i<invNum ; i++)
+        printf("%d\t%d\n",ptr->inventory[i][0], ptr->inventory[i][1]); 
+    printf("------------------------\n");
+    
+    printf("Total price $%.2f\n", ptr->totalPrice);
+    printf("Date %d/%d/%d\n",(1900+order_time->tm_year),(1+order_time->tm_mon),order_time->tm_mday);
+    printf("========================\n");
 }
 
 void inventory()
@@ -302,11 +332,11 @@ void inventory()
             scanf("%d", &num_del);
             for(int i = 0 ; i < num_del ; i++)
             {
-                printf("Enter the %d's book id to detete: ",i);
+                printf("Enter the %d's book id to detete: ", i+1);
                 scanf("%d",&id_del);
                 if( deleteInv(id_del) )
                 {
-                    printf("successfully deleted");
+                    printf("successfully deleted\n");
                 }
                 else
                 {
@@ -324,7 +354,6 @@ void inventory()
             printf("[0] increasing or [1] decreasing: ");
             scanf("%d", &order);
             sortInv(order,order_by);
-            printf("ID\tName\tPrice\tQuantity\tCategory\n");    // print title
             traversaInv();
         }
         // search
@@ -333,7 +362,8 @@ void inventory()
             int search_by;
             int search_id;
             char search_name[MAX_BOOK_NAME];
-
+            struct inventory *p;
+            
             printf("Which attribute you want to search with?\n");
             printf("[0] id or [1] name: ");
             scanf("%d", &search_by);
@@ -341,13 +371,21 @@ void inventory()
             {
                 printf("Enter the book id: ");
                 scanf("%d",&search_id);
-                searchInvByID(search_id);
+                p = searchInvByID(search_id);
+                if(p == NULL)
+                    printf("No such inventory.\n");
+                else
+                    printOneInv(p);
             }
             else if(search_by == 1)
             {
                 printf("Enter the book name: ");
                 scanf("%s",search_name);
-                searchInvByName(search_name);
+                p = searchInvByName(search_name);
+                if(p == NULL)
+                    printf("No such inventory.\n");
+                else
+                    printOneInv(p);
             }
             else
             {
@@ -361,9 +399,20 @@ void inventory()
             int replenish_num;
             printf("Enter the id you want to replenish?: ");
             scanf("%d",&replenish_id);
-            searchInvByID(replenish_id);
+
+            while(searchInvByID(replenish_id) == NULL){
+                errorMessage(0);
+                printf("Enter the id you want to replenish?: ");
+                scanf("%d",&replenish_id);
+            }
+            
             printf("Enter the amount of the book you want to add?: ");
             scanf("%d",&replenish_num);
+            while(replenish_num <= 0){
+                printf("The number must > 0.\n");
+                printf("Enter the amount of the book you want to add?: ");
+                scanf("%d",&replenish_num);
+            }
             replenish(replenish_id,replenish_num);
         }
         // exit
@@ -391,17 +440,17 @@ void order()
         // add
         if(action == 0)
         {
-            void readOrder();
+            readOrder();
         }
         // delete
         else if(action == 1)
         {
             int num_del;
             int id_del;
-            printf("How many number of order do you want to cancel?: ");
+            printf("How much order do you want to cancel?: ");
             scanf("%d", &num_del);
             for(int i = 0 ; i < num_del ; i++){
-                printf("Enter the %d's order ID to cancel: ",i);
+                printf("Enter the %d's order ID to cancel: ", i+1);
                 scanf("%d",&id_del);
                 cancelOrder(id_del);
             }

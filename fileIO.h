@@ -5,6 +5,7 @@
 #include "orderOperation.h"
 
 void main_menu();
+void printOneInv(struct inventory * inv);
 void printInv(struct inventory * inv,int category);
 void printOrder(struct order *ptr);
  
