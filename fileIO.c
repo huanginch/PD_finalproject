@@ -239,6 +239,10 @@ void readOrder(void)
             	    value = strtok(NULL, ", \n");
                 }
 
+                for(int i = 0; i < numType; i++){
+                    checkReplenish(inventoryIds[i]);
+                }
+
                 if( !addOrder(CustomerName, inventoryIds, inventoryQuantity, numType))
                 {
                     errorMessage(1);

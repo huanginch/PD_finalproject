@@ -261,7 +261,7 @@ BOOL cancelOrder(int orderId){
 void checkReplenish(int inventoryId){
     struct inventory *inv = searchInvByID(inventoryId);
     if(inv->quantity < 10){
-        printf("商品庫存過少，請補貨\n");
+        printf("ID:%d商品庫存過少，請補貨\n", inventoryId);
     }
     return;
 }
