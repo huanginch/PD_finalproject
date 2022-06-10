@@ -174,7 +174,7 @@ void printInv(struct inventory * inv,int category)
 /* to get the order info from file or user input */
 void readOrder(void)
 {
-    char *CustomerName;
+    char *CustomerName = NULL;
 
     int input;
     const char path[100];
