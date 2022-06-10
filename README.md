@@ -7,5 +7,8 @@
 
 ## How to Execute
 ```
+$make clean
 $make
 ```
+## inventory struct:
+we have three types of books and a category list.
