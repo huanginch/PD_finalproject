@@ -151,7 +151,7 @@ void readInv(void)
 void printInv(struct inventory * inv,int category)
 {
     static char *type_table[] = {"EDU", "FIN", "NOVEL"};
-    printf("%d\t%s\t%.2f\t%d\t%s\n", inv->inventoryId, inv->inventoryName, inv->price, inv->quantity, type_table[i]);
+    printf("%d\t%s\t%.2f\t%d\t%s\n", inv->inventoryId, inv->inventoryName, inv->price, inv->quantity, type_table[category]);
 }
 
 /* to get the order info from file or user input */
@@ -267,15 +267,16 @@ void readOrder(void)
     }
 }
 
-void printOrder(void)
+void printOrder(struct order *ptr)
 {
-    int order, order_by;
-    printf("To show the data, which attribute do you want to sort?\n");
-    printf("[0] id or [1] total price: ");
-    scanf("%d", &order_by);
-    printf("[0] increasing or [1] decreasing: ");
-    scanf("%d", &order);
-    sortOrder(order,order_by);
+    //print: orderId CustomerName inventoryIds[5] inventoryQuantity[5] totalPrice orderDate
+    struct tm *order_time;
+    order_time = gmtime(&ptr->orderDate);
+    printf("%d\t%s\t%d %d\t%d %d\t%d %d\t%d %d\t%d %d\t%d\t%d/%d/%d\n",
+        ptr->orderId, ptr->CustomerName, ptr->inventoryIds[0], ptr->inventoryQuantity[0],
+        ptr->inventoryIds[1], ptr->inventoryQuantity[1], ptr->inventoryIds[2], ptr->inventoryQuantity[2],
+        ptr->inventoryIds[3], ptr->inventoryQuantity[3], ptr->inventoryIds[4], ptr->inventoryQuantity[4],
+        ptr->totalPrice,(1900+order_time->tm_year), (1+order_time->tm_mon),order_time->tm_mday);   
 }
 
 void inventory()
@@ -303,9 +304,13 @@ void inventory()
             {
                 printf("Enter the %d's book id to detete: ",i);
                 scanf("%d",&id_del);
-                if( !deleteInv(id_del) )
+                if( deleteInv(id_del) )
                 {
-                    errorMessage();
+                    printf("successfully deleted");
+                }
+                else
+                {
+                    errorMessage(2);
                 }
             }
         }
