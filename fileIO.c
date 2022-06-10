@@ -174,7 +174,7 @@ void printInv(struct inventory * inv,int category)
 /* to get the order info from file or user input */
 void readOrder(void)
 {
-    char *CustomerName = NULL;
+    char *CustomerName;
 
     int input;
     const char path[100];
@@ -256,7 +256,7 @@ void readOrder(void)
     {
         // Column 1 : Name
         printf("CustomerName: ");
-        scanf("%s", CustomerName);
+        scanf("%s", &CustomerName);
 
         int numType = 0;
         printf("How many types of book need to add: ");
