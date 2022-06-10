@@ -96,7 +96,6 @@ void sortOrder(int order, int order_by)
         printf("There is no order.\n");
         return;
     }
-    printf("headID:%d\n",(order_queue.head)->orderId);
     struct order *ptr;
     if(order_by == 0)
     {
@@ -111,7 +110,6 @@ void sortOrder(int order, int order_by)
         {
             for(ptr = order_queue.head ; ptr != NULL ; ptr = ptr->next)
             {
-                printf("ptr:%d\n",ptr->orderId);
                 printOrder(ptr);
             }
         }

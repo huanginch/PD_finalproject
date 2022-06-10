@@ -175,81 +175,69 @@ void printInv(struct inventory * inv,int category)
 void readOrder(void)
 {
     char *CustomerName;
-
-    int input;
     const char path[100];
 
-    printf("Which type of data you want to input?\n");
-    printf("[0] file(.csv): "); //[1] user input
-    scanf("%d", &input);
+    printf("Please enter the file path: ");
+    scanf("%s", path);
 
-    //input a file
-    if(input == 0)
+    //testing path: "C:\\Users\\phoebe\\Documents\\testing_order.csv"
+    //FILE* fp = fopen("testing_order.csv", "r");
+    FILE* fp = fopen(path, "r");
+    
+    if (!fp)
     {
-		const char path[100];
-        printf("File path: ");
-        scanf("%s", path);
+        printf("Can't open file TT...\n");
+    }
+    else 
+    {
+        // Here we have taken size of
+        // array 1024 you can modify it
+        char buffer[1024];
+        int row = 0;
 
-		//testing path: "C:\\Users\\phoebe\\Documents\\testing_order.csv"
-        //FILE* fp = fopen("testing_order.csv", "r");
-        FILE* fp = fopen(path, "r");
-		printf("%s\n",path);
-		
-		if (!fp)
-		{
-			printf("Can't open file TT...\n");
-		}
-    	else 
-		{
-        	// Here we have taken size of
-        	// array 1024 you can modify it
-        	char buffer[1024];
-        	int row = 0;
+        while (fgets(buffer, 1024, fp)) 
+        {
+            row++; 
+            // To avoid printing of column
+            // names in file can be changed
+            // according to need
+            if (row == 1) continue;
 
-        	while (fgets(buffer, 1024, fp)) 
-			{
-           		row++; 
-            	// To avoid printing of column
-            	// names in file can be changed
-            	// according to need
-            	if (row == 1) continue;
+            // Splitting the data
+            char* value = strtok(buffer, ", \n");
 
-            	// Splitting the data
-            	char* value = strtok(buffer, ", \n");
+            // Column 1 : Name
+            CustomerName = value;
+            value = strtok(NULL, ", \n");
 
-            	// Column 1 : Name
-            	CustomerName = value;
-            	value = strtok(NULL, ", \n");
+            int numType = 0;
+            numType = atoi(value);
+            int inventoryIds[numType];
+            int inventoryQuantity[numType];
 
-                int numType = 0;
-                numType = atoi(value);
-                int inventoryIds[numType];
-                int inventoryQuantity[numType];
-
+            value = strtok(NULL, ", \n");
+            // Column 2~11 : item info
+            for(int i = 0 ; i < numType ; i++)
+            {
+                // item i id
+                inventoryIds [i] = atoi(value);
                 value = strtok(NULL, ", \n");
-                // Column 2~11 : item info
-                for(int i = 0 ; i < numType ; i++)
-                {
-                    // item i id
-            	    inventoryIds [i] = atoi(value);
-            	    value = strtok(NULL, ", \n");
 
-            	    // item i  quantity
-            	    inventoryQuantity [i] = atoi(value);
-            	    value = strtok(NULL, ", \n");
+                // item i  quantity
+                inventoryQuantity [i] = atoi(value);
+                value = strtok(NULL, ", \n");
 
-                    checkReplenish(inventoryIds[i]);
-                }
+                checkReplenish(inventoryIds[i]);
+            }
 
-                if( !addOrder(CustomerName, inventoryIds, inventoryQuantity, numType))
-                {
-                    errorMessage(1);
-                    break;
-                }
-			}
-        // Close the file
-        fclose(fp);
-		}
+            if( !addOrder(CustomerName, inventoryIds, inventoryQuantity, numType))
+            {
+                errorMessage(1);
+                break;
+            }
+        }
+    // Close the file
+    fclose(fp);
     }
     //user input
     /*else if(input == 1)
@@ -438,7 +426,7 @@ void order()
     while(true)
     {
         printf("Please enter an number to do with the order?\n");
-        printf("[0] add [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:");
+        printf("[0] importOrder [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:");
         scanf("%d", &action);
         
         // add
@@ -464,7 +452,7 @@ void order()
         {
             //problem: how to do with the input is in the list correct.
             int order, order_by;
-            printf("To show the data, which attribute do you want to sort?");
+            printf("To show the data, which attribute do you want to sort?\n");
             printf("[0] id or [1] total amount: ");
             scanf("%d", &order_by);
             printf("[0] increasing or [1] decreasing: ");
