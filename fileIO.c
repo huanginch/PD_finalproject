@@ -179,7 +179,7 @@ void readOrder(void)
     int input;
     const char path[100];
 
-    printf("Which type of data you want to input?");
+    printf("Which type of data you want to input?\n");
     printf("[0] file(.csv) [1] user input: ");
     scanf("%d", &input);
 
@@ -279,7 +279,7 @@ void readOrder(void)
                 i--;
             }
             else{
-                printf("Product %d Amount: ", i);
+                printf("Product %d Amount: ", i+1);
                 scanf("%d", &inventoryQuantity[i]);
             }
         }
