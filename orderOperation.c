@@ -20,6 +20,7 @@ BOOL isEmpty(void)
     return !(order_queue.head) ? true : false;
 }
 
+//add a new order into queue.
 BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], int totalPrice)
 {
     static int orderID = 0;
@@ -62,6 +63,7 @@ BOOL addOrder(char CustomerName[], int inventoryIds[], int inventoryQuantity[], 
     return true;
 }
 
+//use insertion sort to sort the price to increasing
 void insertion_sort(int total_price[],struct order *order[], int n) {
   for (int i = 0; i < n; i++) {
     int j = i;
@@ -80,7 +82,7 @@ void insertion_sort(int total_price[],struct order *order[], int n) {
   }
 }
 
-//order(0:increasing, 1:decreasing) order_by(0:id, 1:total price )
+//traversal the queue with the request like : order(0:increasing, 1:decreasing), order_by(0:id, 1:total price )
 void sortOrder(int order, int order_by)
 {
     if(isEmpty())
@@ -109,6 +111,7 @@ void sortOrder(int order, int order_by)
     }
     else if(order_by == 1)
     {
+        //use two array to store the price and the pointer of the order 
         struct order **price_order = malloc( num_order * sizeof(struct order *));
         int *total_price = malloc(num_order * sizeof( int ));
         int i = 0;
@@ -118,6 +121,7 @@ void sortOrder(int order, int order_by)
             price_order[i++] = ptr;
         }
 
+        //use insertion sort to sort the price array
         insertion_sort(total_price,price_order,num_order);
          
         if(order == 0)
@@ -131,7 +135,7 @@ void sortOrder(int order, int order_by)
         {
             for(i = num_order-1 ; i >= 0 ; i++)
             {
-                showOrder(price_order[i]);                 
+                showOrder(price_order[i]);          
             }
         }
     }
@@ -160,7 +164,7 @@ void searchOrder(int orderId){
 BOOL completeOrder(){
     if(isEmpty()){
         printf("There is no order.\n");
-        return false;
+        return FALSE;
     }
     else{
         num_order--;
@@ -168,14 +172,14 @@ BOOL completeOrder(){
         order_queue.head = order_queue.head->next;
         printf("Order:%d complete!\n", toComplete->orderId); //for debug
         free(toComplete);
-        return true;
+        return TRUE;
     }
 }
 
 BOOL cancelOrder(int orderId){
     if(isEmpty()){
         printf("There is no order.\n");
-        return false;
+        return FALSE;
     }
     else{
         struct order *cur = order_queue.head;
@@ -186,29 +190,13 @@ BOOL cancelOrder(int orderId){
                 cur->next->prev = cur->prev;
                 printf("Order:%d canceled!\n", toCancel->orderId); //for debug
                 free(toCancel);
-                return true;
+                return TRUE;
             }
             else{
                 cur = cur->next;
             }
         }
         printf("Order not exist\n");
-        return false;
+        return FALSE;
     }
 }
-
-
-void checkReplenish(int inventoryId){
-    int i;
-    struct order *cur = order_queue.tail;//the newest order data
-        int ids_len = sizeof(cur->inventoryIds)/sizeof(cur->inventoryIds[0]);
-        for(i = 0; i < ids_len; i++){//find the id
-            if(cur->inventoryIds[i] == inventoryId){
-                if(cur->inventoryQuantity[i] < 10){
-                    printf("商品庫存過少，請補貨\n");
-                    return;
-                }
-            }
-        }
-}
-
