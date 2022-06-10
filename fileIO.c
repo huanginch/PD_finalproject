@@ -256,7 +256,7 @@ void readOrder(void)
     {
         // Column 1 : Name
         printf("CustomerName: ");
-        scanf("%s", &CustomerName);
+        scanf("%s", CustomerName);
 
         int numType = 0;
         printf("How many types of book need to add: ");
