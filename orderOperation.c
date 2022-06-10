@@ -3,17 +3,6 @@
 //initial order queue
 struct orderQueue order_queue = {NULL,NULL};  
 static int num_order = 0;
-void showOrder(struct order *ptr)
-{
-    //print: orderId CustomerName inventoryIds[5] inventoryQuantity[5] totalPrice orderDate
-    struct tm *order_time;
-    order_time = gmtime(&ptr->orderDate);
-    printf("%d\t%s\t%d %d\t%d %d\t%d %d\t%d %d\t%d %d\t%d\t%d/%d/%d\n",
-        ptr->orderId, ptr->CustomerName, ptr->inventoryIds[0], ptr->inventoryQuantity[0],
-        ptr->inventoryIds[1], ptr->inventoryQuantity[1], ptr->inventoryIds[2], ptr->inventoryQuantity[2],
-        ptr->inventoryIds[3], ptr->inventoryQuantity[3], ptr->inventoryIds[4], ptr->inventoryQuantity[4],
-        ptr->totalPrice,(1900+order_time->tm_year), (1+order_time->tm_mon),order_time->tm_mday);   
-}
 
 BOOL isEmpty(void)
 {  
@@ -98,14 +87,14 @@ void sortOrder(int order, int order_by)
         {
             for(ptr = order_queue.tail ; ptr != NULL ; ptr = ptr->prev)
             {
-                showOrder(ptr);
+                printOrder(ptr);
             }
         }
         else if(order == 1)
         {
             for(ptr = order_queue.head ; ptr != NULL ; ptr = ptr->next)
             {
-                showOrder(ptr);
+                printOrder(ptr);
             }
         }
     }
@@ -128,14 +117,14 @@ void sortOrder(int order, int order_by)
         {   
             for(i = 0;i<num_order;i++)
             {
-                showOrder(price_order[i]);                
+                printOrder(price_order[i]);                
             }
         }
         else if(order == 1)
         {
             for(i = num_order-1 ; i >= 0 ; i++)
             {
-                showOrder(price_order[i]);          
+                printOrder(price_order[i]);          
             }
         }
     }
@@ -164,7 +153,7 @@ void searchOrder(int orderId){
 BOOL completeOrder(){
     if(isEmpty()){
         printf("There is no order.\n");
-        return FALSE;
+        return false;
     }
     else{
         num_order--;
@@ -172,14 +161,14 @@ BOOL completeOrder(){
         order_queue.head = order_queue.head->next;
         printf("Order:%d complete!\n", toComplete->orderId); //for debug
         free(toComplete);
-        return TRUE;
+        return true;
     }
 }
 
 BOOL cancelOrder(int orderId){
     if(isEmpty()){
         printf("There is no order.\n");
-        return FALSE;
+        return false;
     }
     else{
         struct order *cur = order_queue.head;
@@ -190,13 +179,13 @@ BOOL cancelOrder(int orderId){
                 cur->next->prev = cur->prev;
                 printf("Order:%d canceled!\n", toCancel->orderId); //for debug
                 free(toCancel);
-                return TRUE;
+                return true;
             }
             else{
                 cur = cur->next;
             }
         }
         printf("Order not exist\n");
-        return FALSE;
+        return false;
     }
 }
