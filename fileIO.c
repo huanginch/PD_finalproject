@@ -6,16 +6,16 @@ void errorMessage(int error)
     switch(error)
     {
     case 0:
-        printf("ERROR : Please enter the correct value.\n");
+        printf(RED_BOLD"ERROR : Please enter the correct value.\n"RESET);
         break;
     case 1:
-        printf("ERROR : Add failed.\n");
+        printf(RED_BOLD"ERROR : Add failed.\n"RESET);
         break;
     case 2:
-        printf("ERROR : Delete failed.\n");
+        printf(RED_BOLD"ERROR : Delete failed.\n"RESET);
         break;
     case 3:
-        printf("\n");
+        printf(RED_BOLD" is already exist.\n"RESET);
         break;
     default:
         break;
@@ -52,9 +52,9 @@ void readInv(void)
 		
 		if (!fp)
 		{
-			printf("Can't open file TT...\n");
+			printf(RED_BOLD"ERROR : Can't open file TT...\n"RESET);
 		}
-    	else 
+        else 
 		{
 			char *name, *c_type;
 			int price, quantity, type;
@@ -63,7 +63,7 @@ void readInv(void)
         	// array 1024 you can modify it
         	char buffer[1024];
         	int row = 0;
-
+            int success_cnt = 0, fail_cnt = 0;
         	while(fgets(buffer, 1024, fp)) 
 			{
            		row++;
@@ -78,6 +78,15 @@ void readInv(void)
 
             	// Column 1 : Name
             	name = value;
+
+                //Check reapet data
+                struct inventory *p = searchInvByName(name);
+                if(p != NULL){
+                    printf(RED_BOLD"ERROR : Inventory <%s>"RESET, name);
+                    errorMessage(3);
+                    fail_cnt++;
+                    continue;
+                }
             	value = strtok(NULL, ", \n");
 
             	// Column 2 : Price
@@ -95,24 +104,29 @@ void readInv(void)
                 if(value == NULL)
                 {
                     //there are at least one value lost.
-                    printf("ERROR : Line %d has missing value.\n", row);
+                    printf(RED_BOLD"ERROR : Line %d has missing value.\n"RESET, row);
+                    fail_cnt++;
                     break;
                 }
                 if(type == -1)
                 {
                     //the type value is not in the list of category.        
-                    printf("ERROR : The type attribute on line %d is incorrect\n", row);
+                    printf(RED_BOLD"ERROR : The type attribute on line %d is incorrect\n"RESET, row);
+                    fail_cnt++;
                     break;
                 }
 
                 if( !addInv(name,price,quantity,type) )
                 {
                     errorMessage(1);
+                    fail_cnt++;
                     break;
                 }
+                success_cnt++;
 			}
-        // Close the file
-        fclose(fp);
+            printf(GRN_BOLD"MSG : Import success! [Success: %d datas/Fail: %d datas]\n"RESET,success_cnt, fail_cnt);
+            // Close the file
+            fclose(fp);
 		}
     }
     //user input
@@ -124,26 +138,34 @@ void readInv(void)
         printf("Name: ");
         scanf("%s", name);
 
-        printf("Price: ");
-        scanf("%d", &price);
-
-        printf("Quantity: ");
-        scanf("%d", &quantity);
-
-        printf("Type: ");
-        scanf("%s", c_type);
-        type = checkType(c_type);
-
-        if(type == -1)
-        {
-            //the type value is not in the list of category.        
-            printf("ERROR : The type attribute is incorrect\n");
-            return;
+        //Check reapet data
+        struct inventory *p = searchInvByName(name);
+        if(p != NULL){
+            printf(RED_BOLD"ERROR : Inventory <%s>"RESET, name);
+            errorMessage(3);
         }
+        else{
+            printf("Price: ");
+            scanf("%d", &price);
 
-        if( !addInv(name,price,quantity,type) )
-        {
-            errorMessage(1); 
+            printf("Quantity: ");
+            scanf("%d", &quantity);
+
+            printf("Type: ");
+            scanf("%s", c_type);
+            type = checkType(c_type);
+
+            if(type == -1)
+            {
+                //the type value is not in the list of category.        
+                printf(RED_BOLD"ERROR : The type attribute is incorrect\n"RESET);
+                return;
+            }
+
+            if( !addInv(name,price,quantity,type) )
+            {
+                errorMessage(1); 
+            }
         }
     }
 }
@@ -161,14 +183,14 @@ void printOneInv(struct inventory *inv)
     else if(inv->inventoryId - 100 > 0){
         type = 0;
     }
-    printf("ID\tCategory\tName\tPrice\tQuantity\n");
-    printf("%d\t%s\t\t%s\t%.2f\t%d\n", inv->inventoryId, type_table[type],inv->inventoryName, inv->price, inv->quantity);
+    printf(BLU_BOLD"ID\tCategory\tPrice\t\tQuantity\tName\n"RESET);
+    printf("%d\t%s\t\t%.2f\t\t%d\t\t%s\n", inv->inventoryId, type_table[type],inv->price,inv->quantity, inv->inventoryName);
 }
 
 void printInv(struct inventory * inv,int category)
 {
     static char *type_table[] = {"EDU", "FIN", "NOVEL"};
-    printf("%d\t%s\t\t%s\t%.2f\t%d\n", inv->inventoryId, type_table[category],inv->inventoryName, inv->price, inv->quantity);
+    printf("%d\t%s\t\t%.2f\t\t%d\t\t%s\n", inv->inventoryId, type_table[category],inv->price,inv->quantity, inv->inventoryName);
 }
 
 /* to get the order info from file or user input */
@@ -186,7 +208,7 @@ void readOrder(void)
     
     if (!fp)
     {
-        printf("Can't open file TT...\n");
+        printf(RED_BOLD"ERROR : Can't open file TT...\n"RESET);
     }
     else 
     {
@@ -236,8 +258,9 @@ void readOrder(void)
                 break;
             }
         }
-    // Close the file
-    fclose(fp);
+        printf(GRN_BOLD"MSG : Import success!\n"RESET);
+        // Close the file
+        fclose(fp);
     }
     //user input
     /*else if(input == 1)
@@ -286,18 +309,18 @@ void printOrder(struct order *ptr)
 
     struct tm *order_time;
     order_time = gmtime(&ptr->orderDate);
-    printf("OrderID\tCustomerName\n");
+    printf(BLU_BOLD"OrderID\tCustomerName\n"RESET);
     printf("%04d\t\t%s\t\n",ptr->orderId, ptr->CustomerName);
     printf("------------------------\n");
 
-    printf("GOODS\n");
-    printf("BOOKID\tBOOKQuantity\n");
+    printf(BLU_BOLD"GOODS\n");
+    printf("BOOKID\tBOOKQuantity\n"RESET);
     for(int i = 0 ; i<invNum ; i++)
         printf("%d\t%d\n",ptr->inventory[i][0], ptr->inventory[i][1]); 
     printf("------------------------\n");
     
-    printf("Total price $%.2f\n", ptr->totalPrice);
-    printf("Date %d/%d/%d\n",(1900+order_time->tm_year),(1+order_time->tm_mon),order_time->tm_mday);
+    printf(BLU_BOLD"Total price \x1b[0m$%.2f\n", ptr->totalPrice);
+    printf(BLU_BOLD"Date\x1b[0m %d/%d/%d\n",(1900+order_time->tm_year),(1+order_time->tm_mon),order_time->tm_mday);
     printf("========================\n");
 }
 
@@ -307,7 +330,7 @@ void inventory()
     while(true)
     {
         printf("Please enter an number to do with the inventory?\n");
-        printf("[0] add [1] delete [2] show [3] search  [4] replenish [5] exit: ");
+        printf(YEL_BOLD"[0] add [1] delete [2] show [3] search  [4] replenish [5] exit: "RESET);
         scanf("%d", &action);
 
         // add
@@ -324,11 +347,11 @@ void inventory()
             scanf("%d", &num_del);
             for(int i = 0 ; i < num_del ; i++)
             {
-                printf("Enter the %d's book id to detete: ", i+1);
+                printf("Enter the %dth book id to detete: ", i+1);
                 scanf("%d",&id_del);
                 if( deleteInv(id_del) )
                 {
-                    printf("successfully deleted\n");
+                    printf(GRN_BOLD"MSG : successfully deleted\n"RESET);
                 }
                 else
                 {
@@ -365,7 +388,7 @@ void inventory()
                 scanf("%d",&search_id);
                 p = searchInvByID(search_id);
                 if(p == NULL)
-                    printf("No such inventory.\n");
+                    printf(RED_BOLD"ERROR : No such inventory.\n"RESET);
                 else
                     printOneInv(p);
             }
@@ -375,13 +398,13 @@ void inventory()
                 scanf("%s",search_name);
                 p = searchInvByName(search_name);
                 if(p == NULL)
-                    printf("No such inventory.\n");
+                    printf(RED_BOLD"ERROR : No such inventory.\n"RESET);
                 else
                     printOneInv(p);
             }
             else
             {
-                printf("Please enter the correct number.\n");
+                errorMessage(0);
             }
         }
         // replenish
@@ -401,7 +424,7 @@ void inventory()
             printf("Enter the amount of the book you want to add?: ");
             scanf("%d",&replenish_num);
             while(replenish_num <= 0){
-                printf("The number must > 0.\n");
+                printf(RED_BOLD"ERROR : The number must > 0.\n"RESET);
                 printf("Enter the amount of the book you want to add?: ");
                 scanf("%d",&replenish_num);
             }
@@ -426,7 +449,7 @@ void order()
     while(true)
     {
         printf("Please enter an number to do with the order?\n");
-        printf("[0] importOrder [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:");
+        printf(YEL_BOLD"[0] importOrder [1] cancelOrder [2] show [3] search [4] completeOrder [5] exit:"RESET);
         scanf("%d", &action);
         
         // add
@@ -442,7 +465,7 @@ void order()
             printf("How much order do you want to cancel?: ");
             scanf("%d", &num_del);
             for(int i = 0 ; i < num_del ; i++){
-                printf("Enter the %d's order ID to cancel: ", i+1);
+                printf("Enter the %dth order ID to cancel: ", i+1);
                 scanf("%d",&id_del);
                 cancelOrder(id_del);
             }
@@ -491,7 +514,7 @@ void main_menu()
     while(true)
     {
         printf("Which data do you want to act on ?\n");
-        printf("[0] inventory [1] order [2] Quit: ");
+        printf(YEL_BOLD"[0] Inventory [1] Order [2] Quit: "RESET);
         scanf("%d", &act_data);
 
         if(act_data == 0)

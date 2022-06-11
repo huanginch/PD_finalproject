@@ -148,7 +148,7 @@ void sortOrder(int order, int order_by)
 
 void searchOrder(int orderId){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return;
     }
     else{
@@ -162,19 +162,20 @@ void searchOrder(int orderId){
                 cur = cur->next;
             }
         }
-        printf("Order not exist\n");
+        printf(RED_BOLD"ERROR : Order not exist.\n"RESET);
     }
 }
 
 BOOL completeOrder(){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return false;
     }
     else{
         num_order--;
         struct order *toComplete = order_queue.head;
-        printf("Order:%d complete!\n", toComplete->orderId); //for debug
+        
+        printf(GRN_BOLD"MSG : Order[%04d] successfuly complete!\n"RESET, toComplete->orderId); //for debug
         
         //Reduce book's inventory
         int i = 0;
@@ -205,24 +206,20 @@ BOOL completeOrder(){
         
         toComplete = order_queue.head;
         order_queue.head = toComplete->next;
-        (order_queue.head)->prev = NULL;
+        if(order_queue.head != NULL){
+            (order_queue.head)->prev = NULL;
+        }
+        else{
+            order_queue.tail = NULL;
+        }
         free(toComplete);
-
         return true;
     }
-    // else{
-    //     num_order--;
-    //     struct order *toComplete = order_queue.head;
-    //     order_queue.head = order_queue.head->next;
-    //     printf("Order:%d complete!\n", toComplete->orderId); //for debug
-    //     free(toComplete);
-    //     return true;
-    // }
 }
 
 BOOL cancelOrder(int orderId){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return false;
     }
     else{
@@ -243,7 +240,7 @@ BOOL cancelOrder(int orderId){
                 if (toCancel->prev != NULL)
                     toCancel->prev->next = toCancel->next;
 
-                printf("Order:%d canceled!\n", toCancel->orderId); //for debug
+                printf(GRN_BOLD"MSG : Order[%04d] successfuly canceled!\n"RESET, toCancel->orderId); //for debug
                 free(toCancel);
                 return true;
             }
@@ -251,7 +248,7 @@ BOOL cancelOrder(int orderId){
                 cur = cur->next;
             }
         }
-        printf("Order not exist\n");
+        printf(RED_BOLD"ERROR : Order not exist.\n"RESET);
         return false;
     }
 }
@@ -259,6 +256,6 @@ BOOL cancelOrder(int orderId){
 void checkReplenish(int inventoryId){
     struct inventory *inv = searchInvByID(inventoryId);
     if(inv->quantity < 10){
-        printf("ID:%d商品庫存過少，請補貨\n", inventoryId);
+        printf(RED_BOLD"ALERT : ID[%d]商品庫存過少，請補貨\n"RESET, inventoryId);
     }
 }
