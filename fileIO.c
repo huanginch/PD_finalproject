@@ -305,7 +305,7 @@ void readOrder(void)
 
 void printOrder(struct order *ptr)
 {
-    int invNum = sizeof(&(ptr->inventory))/sizeof(ptr->inventory[0]);
+    int invNum = sizeof((ptr->inventory))/sizeof(ptr->inventory[0]);
 
     struct tm *order_time;
     order_time = gmtime(&ptr->orderDate);
@@ -315,8 +315,9 @@ void printOrder(struct order *ptr)
 
     printf(BLU_BOLD"GOODS\n");
     printf("BOOKID\tBOOKQuantity\n"RESET);
-    for(int i = 0 ; i<invNum ; i++)
+    for(int i = 0 ; i < invNum && (ptr->inventory[i][0] != 0) ; i++){
         printf("%d\t%d\n",ptr->inventory[i][0], ptr->inventory[i][1]); 
+    }
     printf("------------------------\n");
     
     printf(BLU_BOLD"Total price \x1b[0m$%.2f\n", ptr->totalPrice);
