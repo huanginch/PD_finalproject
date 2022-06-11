@@ -69,7 +69,7 @@ void traversaInv(){
 	for(i = 0; i < MAX_CATEGORY; i++){
 	 	printf("type %d:\n", i);//print type
 	 	struct inventory *current = cat_list[i].inv_head;
-		printf("ID\tCategory\tName\tPrice\tQuantity\n");
+		printf(BLU_BOLD"ID\tCategory\tPrice\t\tQuantity\tName\n"RESET);
 	 	while(current != NULL){
 	 		//printf each item
 			printInv(current, i);

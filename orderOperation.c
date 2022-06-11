@@ -148,7 +148,7 @@ void sortOrder(int order, int order_by)
 
 void searchOrder(int orderId){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return;
     }
     else{
@@ -168,7 +168,7 @@ void searchOrder(int orderId){
 
 BOOL completeOrder(){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return false;
     }
     else{
@@ -206,7 +206,12 @@ BOOL completeOrder(){
         
         toComplete = order_queue.head;
         order_queue.head = toComplete->next;
-        (order_queue.head)->prev = NULL;
+        if(order_queue.head != NULL){
+            (order_queue.head)->prev = NULL;
+        }
+        else{
+            order_queue.tail = NULL;
+        }
         free(toComplete);
 
         return true;
@@ -215,7 +220,7 @@ BOOL completeOrder(){
 
 BOOL cancelOrder(int orderId){
     if(isEmpty()){
-        printf("There is no order.\n");
+        printf(RED_BOLD"ERROR : There is no order.\n"RESET);
         return false;
     }
     else{
@@ -252,6 +257,6 @@ BOOL cancelOrder(int orderId){
 void checkReplenish(int inventoryId){
     struct inventory *inv = searchInvByID(inventoryId);
     if(inv->quantity < 10){
-        printf("ID:%d商品庫存過少，請補貨\n", inventoryId);
+        printf(RED_BOLD"ALERT : ID[%d]商品庫存過少，請補貨\n"RESET, inventoryId);
     }
 }
