@@ -14,8 +14,36 @@ $make
 We have three types of books and a category list.<br>Each category pointer to a linked list, which save inventories with the same type.<br>
 ![image](https://user-images.githubusercontent.com/57096811/173064830-e6871b46-88cb-4c73-b1be-1e14fe2857d7.png)
 
+* attribute
+```c
+struct inventory {
+    int inventoryId;
+    char inventoryName [MAX_BOOK_NAME];
+    double price;
+    int quantity;
+    struct inventory *next;
+};
+```
+* The book name should not have space.
+* Input csv file should not have redundent empty line.
+
 ## order struct
 The order list is a queue, which saves orders in ID sequence.
+
+* attribute
+```c
+struct order {
+    char CustomerName [MAX_CUSTOMER_NAME];
+    int orderId;
+    float totalPrice;
+    time_t orderDate;
+    struct order *prev;
+    struct order *next;
+    int inventory[20][2]; //Record id and quantity
+};
+
+```
+* The maximum inventory number is 20 per order.
 
 ## How to use
 Like the Flow Chart show, you can choose inventory or order to operate.
