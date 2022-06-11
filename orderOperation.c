@@ -174,46 +174,63 @@ BOOL completeOrder(){
     else{
         num_order--;
         struct order *toComplete = order_queue.head;
-        
-        printf(GRN_BOLD"MSG : Order[%04d] successfuly complete!\n"RESET, toComplete->orderId); //for debug
-        
+          
         //Reduce book's inventory
         int i = 0;
         int type = 0;
         //check inventory type
+        int inventory_complete_id = 0 , inventory_complete_num = 0;
+        int isEnough = true;
         while(toComplete->inventory[i][0]){
-            int inventory_complete_id = toComplete->inventory[i][0];
-            int inventory_complete_num = toComplete->inventory[i][1];
-            if(inventory_complete_id - 300 > 0){
+            inventory_complete_id = toComplete->inventory[i][0];
+            inventory_complete_num = toComplete->inventory[i][1];
+            if(inventory_complete_id - 300 >= 0){
                 type = 2;   
             }
-            else if(inventory_complete_id - 200 > 0){
+            else if(inventory_complete_id - 200 >= 0){
                 type = 1;
             }
-            else if(inventory_complete_id - 100 > 0){
+            else if(inventory_complete_id - 100 >= 0){
                 type = 0;
             }
+            i++;
             struct inventory *cur = cat_list[type].inv_head;
+
+            //Check all the inventory is enough to complete current order
             while(cur != NULL){
                 if(cur->inventoryId == inventory_complete_id){
-                    cur->quantity -= inventory_complete_num;
-                    break;
+                    if(cur->quantity < inventory_complete_num){
+                        printf(RED_BOLD"ALERT : Fail to complete order, Inventory[%d] quantity is not enough\n"RESET, inventory_complete_id);
+                        isEnough = false;
+                    }
                 }
                 cur = cur->next;
             }
-            i++;
-        }
-        
-        toComplete = order_queue.head;
-        order_queue.head = toComplete->next;
-        if(order_queue.head != NULL){
-            (order_queue.head)->prev = NULL;
-        }
-        else{
-            order_queue.tail = NULL;
-        }
-        free(toComplete);
 
+            //Reduce Inventory
+            if(isEnough){
+                while(cur != NULL){
+                    if(cur->inventoryId == inventory_complete_id){
+                            cur->quantity -= inventory_complete_num;
+                    }
+                cur = cur->next;
+                }
+            }
+        }
+
+        //Shift current order from queue
+        if(isEnough){
+            toComplete = order_queue.head;
+            order_queue.head = toComplete->next;
+            if(order_queue.head != NULL){
+                (order_queue.head)->prev = NULL;
+            }
+            else{
+                order_queue.tail = NULL;
+            }
+            free(toComplete);
+            printf(GRN_BOLD"MSG : Order[%04d] successfuly complete!\n"RESET, toComplete->orderId);
+        }
         return true;
     }
 }
@@ -257,6 +274,6 @@ BOOL cancelOrder(int orderId){
 void checkReplenish(int inventoryId){
     struct inventory *inv = searchInvByID(inventoryId);
     if(inv->quantity < 10){
-        printf(RED_BOLD"ALERT : ID[%d]商品庫存過少，請補貨\n"RESET, inventoryId);
+        printf(RED_BOLD"ALERT : ID[%d] inventory quantity is lower than 10, please replenish.\n"RESET, inventoryId);
     }
 }

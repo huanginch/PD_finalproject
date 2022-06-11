@@ -189,13 +189,13 @@ void replenish(int replenish_id,int replenish_num){
 	int i = 0;
 	int type = 0;
 	//check inventory type
-	if(replenish_id - 300 > 0){
+	if(replenish_id - 300 >= 0){
 		type = 2;
 	}
-	else if(replenish_id - 200 > 0){
+	else if(replenish_id - 200 >= 0){
 		type = 1;
 	}
-	else if(replenish_id - 100 > 0){
+	else if(replenish_id - 100 >= 0){
 		type = 0;
 	}
 
