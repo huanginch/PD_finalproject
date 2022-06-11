@@ -213,7 +213,6 @@ BOOL completeOrder(){
             order_queue.tail = NULL;
         }
         free(toComplete);
-
         return true;
     }
 }
