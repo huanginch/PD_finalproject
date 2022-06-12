@@ -138,7 +138,7 @@ void sortOrder(int order, int order_by)
         }
         else if(order == 1)
         {
-            for(i = num_order-1 ; i >= 0 ; i++)
+            for(i = num_order-1 ; i >= 0 ; i--)
             {
                 printOrder(price_order[i]);          
             }

@@ -477,7 +477,7 @@ void order()
             //problem: how to do with the input is in the list correct.
             int order, order_by;
             printf("To show the data, which attribute do you want to sort?\n");
-            printf("[0] id or [1] total amount: ");
+            printf("[0] id or [1] total price: ");
             scanf("%d", &order_by);
             printf("[0] increasing or [1] decreasing: ");
             scanf("%d", &order);
