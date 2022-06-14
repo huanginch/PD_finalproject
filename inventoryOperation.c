@@ -136,10 +136,9 @@ bool deleteInv(int id){//delete produce
 		for (cur = cat_list[i].inv_head , prev = NULL;
 			cur != NULL && cur->inventoryId != id;
 			prev = cur, cur = cur->next);
-		if (cur == NULL)
-		{
-			
-			return false;
+
+		if(cur == NULL){
+			continue;
 		}
 		if (prev == NULL)
 		{
