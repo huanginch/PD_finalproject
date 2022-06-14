@@ -123,7 +123,8 @@ void sortOrder(int order, int order_by)
         for(ptr = order_queue.tail ; ptr != NULL ; ptr = ptr->prev)
         {
             total_price[i] = ptr->totalPrice;
-            price_order[i++] = ptr;
+            price_order[i] = ptr;
+			i++;
         }
 
         //use insertion sort to sort the price array
@@ -249,15 +250,20 @@ BOOL cancelOrder(int orderId){
                 /* If node to be deleted is head node */
                 if (order_queue.head == toCancel)
                     order_queue.head = toCancel->next;
-            
+				
+				/*if the node to be delete is the tail node*/
+				if(order_queue.tail == toCancel)
+					order_queue.tail = toCancel->prev;
+
                 /* Change next only if node to be deleted is NOT the last node */
                 if (toCancel->next != NULL)
-                    toCancel->next->prev = toCancel->prev;
+                    (toCancel->next)->prev = toCancel->prev;
             
                 /* Change prev only if node to be deleted is NOT the first node */
                 if (toCancel->prev != NULL)
-                    toCancel->prev->next = toCancel->next;
-
+                    (toCancel->prev)->next = toCancel->next;
+				
+				num_order--;
                 printf(GRN_BOLD"MSG : Order[%04d] successfuly canceled!\n"RESET, toCancel->orderId); //for debug
                 free(toCancel);
                 return true;
